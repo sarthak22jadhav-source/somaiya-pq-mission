@@ -1,0 +1,243 @@
+{% extends "base.html" %}
+{% import "macros.html" as ui %}
+{% block title %}Dashboard | SomaiyaSat &amp; SomaiyaPod{% endblock %}
+
+{% block content %}
+<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10 space-y-10">
+
+  <!-- ===================== Hero ===================== -->
+  <section class="relative overflow-hidden rounded-2xl border border-white/10 bg-space-900/60">
+    <div class="absolute inset-0 bg-gradient-to-br from-neon-cyan/10 via-transparent to-neon-magenta/10"></div>
+    <div class="relative grid gap-8 p-6 sm:p-10 lg:grid-cols-[1.4fr_1fr] lg:items-center">
+      <div>
+        <span class="chip chip-cyan">Mission Control</span>
+        <h1 class="mt-4 text-3xl font-bold tracking-tight text-white sm:text-4xl">
+          SomaiyaSat <span class="text-neon-cyan">&amp;</span> SomaiyaPod
+        </h1>
+        <p class="mt-2 text-sm font-semibold uppercase tracking-[0.2em] text-slate-400">
+          PocketQube Mission &middot; AI Inter-Satellite Routing
+        </p>
+        <p class="mt-5 max-w-xl text-sm leading-relaxed text-slate-400">
+          A dual-node PocketQube mission demonstrating on-board AI that selects and
+          relays payload traffic between satellites. This dashboard surfaces the
+          live payload catalogue, the TT&amp;C housekeeping link and every telemetry
+          packet logged by the ground station.
+        </p>
+        <div class="mt-7 flex flex-wrap gap-3">
+          <a href="{{ url_for('telemetry') }}" class="btn btn-primary">Log telemetry</a>
+          <a href="{{ url_for('payloads') }}" class="btn btn-ghost">Explore payloads</a>
+        </div>
+      </div>
+
+      <!-- Link diagram -->
+      <div class="relative">
+        <div class="card p-6">
+          <p class="stat-label mb-4">Active routing link</p>
+          <div class="flex items-center justify-between gap-2">
+            <div class="flex flex-col items-center gap-2">
+              <span class="rounded-xl border border-neon-cyan/40 bg-neon-cyan/10 p-3 text-neon-cyan">
+                {{ ui.icon('satellite', 'w-7 h-7') }}
+              </span>
+              <span class="text-xs font-semibold text-slate-300">SomaiyaSat</span>
+            </div>
+            <div class="flex flex-1 flex-col items-center gap-2 px-2">
+              <span class="text-[10px] font-bold uppercase tracking-[0.2em] text-neon-magenta">AI link</span>
+              <div class="relative h-px w-full overflow-hidden bg-white/15">
+                <span class="absolute inset-y-0 w-8 animate-pulse bg-neon-magenta"></span>
+              </div>
+              <span class="font-mono text-[10px] text-slate-500">145.8 MHz</span>
+            </div>
+            <div class="flex flex-col items-center gap-2">
+              <span class="rounded-xl border border-neon-magenta/40 bg-neon-magenta/10 p-3 text-neon-magenta">
+                {{ ui.icon('satellite-dish', 'w-7 h-7') }}
+              </span>
+              <span class="text-xs font-semibold text-slate-300">SomaiyaPod</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== Stat tiles ===================== -->
+  <section class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+    <div class="card card-hover p-6">
+      <div class="flex items-center justify-between">
+        <p class="stat-label">Telemetry packets</p>
+        <span class="text-neon-cyan">{{ ui.icon('activity', 'w-5 h-5') }}</span>
+      </div>
+      <p class="stat-value mt-3">{{ stats.get('total_packets', 0) }}</p>
+      <p class="mt-1 text-xs text-slate-500">Logged from the ground station</p>
+    </div>
+
+    <div class="card card-hover p-6">
+      <div class="flex items-center justify-between">
+        <p class="stat-label">Satellite nodes</p>
+        <span class="text-neon-magenta">{{ ui.icon('satellite', 'w-5 h-5') }}</span>
+      </div>
+      <p class="stat-value mt-3">{{ stats.get('total_satellites', 0) }}</p>
+      <p class="mt-1 text-xs text-slate-500">
+        <span class="text-neon-emerald">{{ stats.get('active_satellites', 0) }}</span> active
+      </p>
+    </div>
+
+    <div class="card card-hover p-6">
+      <div class="flex items-center justify-between">
+        <p class="stat-label">Avg signal</p>
+        <span class="text-neon-gold">{{ ui.icon('radio-tower', 'w-5 h-5') }}</span>
+      </div>
+      <p class="stat-value mt-3">{{ '%.1f' % stats.get('avg_dbm', 0.0) }}<span class="text-base text-slate-500"> dBm</span></p>
+      <p class="mt-1 text-xs text-slate-500">Across all payload modes</p>
+    </div>
+
+    <div class="card card-hover p-6">
+      <div class="flex items-center justify-between">
+        <p class="stat-label">Payload modes</p>
+        <span class="text-neon-cyan">{{ ui.icon('cpu', 'w-5 h-5') }}</span>
+      </div>
+      <p class="stat-value mt-3">{{ catalogue | length }}</p>
+      <p class="mt-1 text-xs text-slate-500">M17 &middot; Codec2 &middot; SSTV &middot; TT&amp;C</p>
+    </div>
+  </section>
+
+  <!-- ===================== Nodes + mode breakdown ===================== -->
+  <section class="grid gap-6 lg:grid-cols-3">
+
+    <!-- Satellites -->
+    <div class="card lg:col-span-2">
+      <div class="flex items-center justify-between border-b border-white/10 px-6 py-4">
+        <div>
+          <h2 class="text-sm font-bold uppercase tracking-widest text-slate-200">Mission nodes</h2>
+          <p class="mt-0.5 text-xs text-slate-500">Spacecraft registered in the database</p>
+        </div>
+        <span class="chip chip-slate">{{ satellites | length }} nodes</span>
+      </div>
+
+      <div class="divide-y divide-white/5">
+        {% for sat in satellites %}
+          {% set counts = stats.get('per_satellite', []) %}
+          {% set entry = counts | selectattr('satellite_id', 'equalto', sat.satellite_id) | list | first %}
+          {% set total_packets = stats.get('total_packets', 0) or 1 %}
+          {% set pct = (((entry.packet_count if entry else 0) * 100 / total_packets) | round(1)) %}
+          <div class="flex flex-wrap items-center gap-4 px-6 py-5">
+            <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-neon-cyan">
+              {{ ui.icon('satellite' if sat.satellite_id != 3 else 'satellite-dish', 'w-6 h-6') }}
+            </div>
+            <div class="min-w-[11rem] flex-1">
+              <p class="text-sm font-semibold text-slate-100">{{ sat.satellite_name }}</p>
+              <p class="mt-0.5 text-xs text-slate-500">
+                {{ sat.orbit_type }}{% if sat.launch_year %} &middot; Launched {{ sat.launch_year }}{% endif %}
+              </p>
+            </div>
+            <div class="w-full sm:w-40">
+              <div class="meter"><span style="width: {{ pct }}%"></span></div>
+              <p class="mt-1.5 text-[11px] text-slate-500">
+                {{ entry.packet_count if entry else 0 }} packets &middot; {{ pct }}%
+              </p>
+            </div>
+            {{ ui.status_chip(sat.status) }}
+          </div>
+        {% else %}
+          <p class="px-6 py-10 text-center text-sm text-slate-500">No satellites registered yet.</p>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Mode breakdown -->
+    <div class="card">
+      <div class="border-b border-white/10 px-6 py-4">
+        <h2 class="text-sm font-bold uppercase tracking-widest text-slate-200">Payload mix</h2>
+        <p class="mt-0.5 text-xs text-slate-500">Packets per mode</p>
+      </div>
+      <div class="space-y-5 p-6">
+        {% for mode in stats.get('mode_breakdown', []) %}
+          {% set pct = ((mode.packet_count * 100 / (stats.get('total_packets', 1) or 1)) | round(1)) %}
+          <div>
+            <div class="mb-2 flex items-center justify-between gap-3">
+              {{ ui.mode_chip(mode.payload_mode) }}
+              <span class="font-mono text-xs text-slate-400">
+                {{ mode.packet_count }} &middot; {{ '%.1f' % (mode.avg_dbm or 0) }} dBm
+              </span>
+            </div>
+            <div class="meter"><span style="width: {{ pct }}%"></span></div>
+          </div>
+        {% else %}
+          <p class="py-6 text-center text-sm text-slate-500">No telemetry recorded yet.</p>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== Recent telemetry + add node ===================== -->
+  <section class="grid gap-6 lg:grid-cols-3">
+
+    <div class="card lg:col-span-2">
+      <div class="flex items-center justify-between border-b border-white/10 px-6 py-4">
+        <div>
+          <h2 class="text-sm font-bold uppercase tracking-widest text-slate-200">Recent packets</h2>
+          <p class="mt-0.5 text-xs text-slate-500">Latest TT&amp;C housekeeping frames</p>
+        </div>
+        <a href="{{ url_for('telemetry') }}" class="text-xs font-semibold text-neon-cyan hover:underline">View all &rarr;</a>
+      </div>
+      <div class="scroll-x">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Node</th><th>Mode</th><th>Signal</th><th>Status</th><th>Logged</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in stats.get('recent', []) %}
+              <tr>
+                <td class="font-medium text-slate-200">{{ row.satellite_name }}</td>
+                <td>{{ ui.mode_chip(row.payload_mode) }}</td>
+                <td class="font-mono {{ ui.strength_class(row.signal_strength_dbm) }}">
+                  {{ '%.2f' % (row.signal_strength_dbm or 0) }} dBm
+                </td>
+                <td class="max-w-[16rem] truncate text-slate-400" title="{{ row.status_msg }}">{{ row.status_msg }}</td>
+                <td class="whitespace-nowrap font-mono text-xs text-slate-500">{{ row.logged_at }}</td>
+              </tr>
+            {% else %}
+              <tr><td colspan="5" class="py-8 text-center text-slate-500">No packets logged yet.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="border-b border-white/10 px-6 py-4">
+        <h2 class="text-sm font-bold uppercase tracking-widest text-slate-200">Register node</h2>
+        <p class="mt-0.5 text-xs text-slate-500">Add a spacecraft to the constellation</p>
+      </div>
+      <form method="post" action="{{ url_for('add_satellite') }}" class="space-y-4 p-6">
+        <div>
+          <label class="field-label" for="satellite_name">Satellite name</label>
+          <input class="field" type="text" id="satellite_name" name="satellite_name"
+                 placeholder="SomaiyaPod-2" required>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="field-label" for="orbit_type">Orbit</label>
+            <select class="field" id="orbit_type" name="orbit_type">
+              {% for o in orbit_types %}<option value="{{ o }}">{{ o }}</option>{% endfor %}
+            </select>
+          </div>
+          <div>
+            <label class="field-label" for="launch_year">Launch year</label>
+            <input class="field" type="number" id="launch_year" name="launch_year"
+                   min="1957" max="2100" placeholder="2026">
+          </div>
+        </div>
+        <div>
+          <label class="field-label" for="status">Status</label>
+          <select class="field" id="status" name="status">
+            {% for s in satellite_statuses %}<option value="{{ s }}">{{ s }}</option>{% endfor %}
+          </select>
+        </div>
+        <button type="submit" class="btn btn-primary w-full">Add node</button>
+      </form>
+    </div>
+  </section>
+</div>
+{% endblock %}

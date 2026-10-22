@@ -1,0 +1,238 @@
+/* ========================================================================
+   SomaiyaSat & SomaiyaPod - PocketQube Mission Dashboard
+   Custom styles layered on top of the Tailwind CDN build.
+   ===================================================================== */
+
+:root {
+  --neon-cyan: #22D3EE;
+  --neon-magenta: #E879F9;
+  --neon-gold: #FBBF24;
+  --neon-emerald: #34D399;
+}
+
+body {
+  background-image:
+    radial-gradient(ellipse 80% 50% at 15% -10%, rgba(34, 211, 238, 0.10), transparent),
+    radial-gradient(ellipse 70% 50% at 90% 0%, rgba(232, 121, 249, 0.08), transparent),
+    radial-gradient(circle at 50% 120%, rgba(18, 43, 84, 0.35), transparent);
+  background-attachment: fixed;
+}
+
+/* ---------------------------------------------------------------- nav -- */
+.nav-link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  padding: 0.5rem 0.9rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: rgb(148 163 184);
+  transition: color 0.15s ease, background-color 0.15s ease;
+}
+.nav-link:hover {
+  color: rgb(226 232 240);
+  background-color: rgba(255, 255, 255, 0.05);
+}
+.nav-link-active {
+  color: var(--neon-cyan);
+  background-color: rgba(34, 211, 238, 0.10);
+}
+.nav-link-active::after {
+  content: "";
+  position: absolute;
+  left: 0.9rem;
+  right: 0.9rem;
+  bottom: 0.15rem;
+  height: 2px;
+  border-radius: 9999px;
+  background: var(--neon-cyan);
+  box-shadow: 0 0 10px rgba(34, 211, 238, 0.8);
+}
+
+/* --------------------------------------------------------------- cards -- */
+.card {
+  position: relative;
+  border-radius: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background-color: rgba(11, 27, 58, 0.55);
+  backdrop-filter: blur(8px);
+  overflow: hidden;
+}
+.card-hover {
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.card-hover:hover {
+  transform: translateY(-3px);
+  border-color: rgba(34, 211, 238, 0.35);
+  box-shadow: 0 18px 40px -20px rgba(34, 211, 238, 0.55);
+}
+
+/* ------------------------------------------------------------- badges --- */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  border-radius: 9999px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 0.15rem 0.6rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.chip-cyan    { color: var(--neon-cyan);    border-color: rgba(34, 211, 238, 0.35);    background: rgba(34, 211, 238, 0.10); }
+.chip-magenta { color: var(--neon-magenta); border-color: rgba(232, 121, 249, 0.35); background: rgba(232, 121, 249, 0.10); }
+.chip-gold    { color: var(--neon-gold);    border-color: rgba(251, 191, 36, 0.35);  background: rgba(251, 191, 36, 0.10); }
+.chip-emerald { color: var(--neon-emerald); border-color: rgba(52, 211, 153, 0.35);  background: rgba(52, 211, 153, 0.10); }
+.chip-slate   { color: rgb(148 163 184);   border-color: rgba(148, 163, 184, 0.30); background: rgba(148, 163, 184, 0.10); }
+
+/* -------------------------------------------------------------- forms --- */
+.field-label {
+  display: block;
+  margin-bottom: 0.4rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgb(148 163 184);
+}
+.field {
+  width: 100%;
+  border-radius: 0.6rem;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background-color: rgba(3, 6, 15, 0.6);
+  padding: 0.6rem 0.85rem;
+  font-size: 0.875rem;
+  color: rgb(226 232 240);
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.field::placeholder { color: rgb(100 116 139); }
+.field:focus {
+  border-color: rgba(34, 211, 238, 0.65);
+  box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.15);
+}
+select.field {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%2394a3b8'%3E%3Cpath d='M5.5 7.5l4.5 5 4.5-5z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.6rem center;
+  background-size: 1.15rem;
+  padding-right: 2.2rem;
+}
+select.field option { background-color: #0B1B3A; color: #E2E8F0; }
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 0.6rem;
+  padding: 0.6rem 1.1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  transition: filter 0.15s ease, transform 0.15s ease;
+  cursor: pointer;
+}
+.btn:hover { filter: brightness(1.12); }
+.btn:active { transform: translateY(1px); }
+.btn-primary {
+  background-image: linear-gradient(135deg, #22D3EE, #0E7490);
+  color: #03060F;
+  box-shadow: 0 10px 25px -12px rgba(34, 211, 238, 0.9);
+}
+.btn-ghost {
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: rgb(203 213 225);
+  background-color: rgba(255, 255, 255, 0.04);
+}
+
+/* -------------------------------------------------------------- table --- */
+.data-table { width: 100%; border-collapse: separate; border-spacing: 0; }
+.data-table thead th {
+  position: sticky;
+  top: 0;
+  background-color: rgba(5, 11, 24, 0.95);
+  backdrop-filter: blur(6px);
+  text-align: left;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgb(100 116 139);
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.10);
+  white-space: nowrap;
+}
+.data-table tbody td {
+  padding: 0.8rem 1rem;
+  font-size: 0.85rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  vertical-align: middle;
+}
+.data-table tbody tr { transition: background-color 0.12s ease; }
+.data-table tbody tr:hover { background-color: rgba(34, 211, 238, 0.06); }
+
+/* --------------------------------------------------------------- misc --- */
+.stat-value {
+  font-family: "JetBrains Mono", Consolas, ui-monospace, monospace;
+  font-size: 2rem;
+  line-height: 1.1;
+  font-weight: 700;
+  color: rgb(241 245 249);
+}
+.stat-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgb(100 116 139);
+}
+
+.meter {
+  height: 6px;
+  width: 100%;
+  border-radius: 9999px;
+  background-color: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+.meter > span {
+  display: block;
+  height: 100%;
+  border-radius: 9999px;
+  background-image: linear-gradient(90deg, #0E7490, #22D3EE);
+}
+
+.scroll-x { overflow-x: auto; }
+
+/* --------------------------------------------------------- logo stage --- */
+/* Presentation frame for the generated mission mark on the /logo page. */
+.logo-stage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1.5rem;
+  border-radius: 0.9rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background-color: rgba(3, 6, 15, 0.55);
+  background-image:
+    radial-gradient(ellipse 70% 60% at 50% 0%, rgba(34, 211, 238, 0.10), transparent),
+    radial-gradient(ellipse 60% 60% at 85% 100%, rgba(232, 121, 249, 0.08), transparent);
+}
+.logo-art {
+  height: auto;
+  border-radius: 0.6rem;
+  box-shadow: 0 24px 60px -30px rgba(34, 211, 238, 0.55);
+}
+
+/* Thin, unobtrusive scrollbars for the dark theme. */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: rgba(3, 6, 15, 0.6); }
+::-webkit-scrollbar-thumb {
+  background: rgba(34, 211, 238, 0.25);
+  border-radius: 9999px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+::-webkit-scrollbar-thumb:hover { background: rgba(34, 211, 238, 0.45); background-clip: content-box; }

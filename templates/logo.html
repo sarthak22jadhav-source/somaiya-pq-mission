@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+{% import "macros.html" as ui %}
+{% block title %}Mission Logo | SomaiyaSat &amp; SomaiyaPod{% endblock %}
+
+{% block content %}
+<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10 space-y-10">
+
+  <!-- ===================== Header ===================== -->
+  <section>
+    <span class="chip chip-cyan">Mission Identity</span>
+    <h1 class="mt-4 text-3xl font-bold tracking-tight text-white">SomaiyaSat &amp; SomaiyaPod logo</h1>
+    <p class="mt-3 max-w-3xl text-sm leading-relaxed text-slate-400">
+      The mission mark is drawn programmatically with a Tkinter canvas and saved as
+      <span class="font-mono text-slate-300">static/logo.png</span>. It pairs the orbiting
+      PocketQube with its ground pod, the AI link that joins them, and the capability
+      suite carried on board. Below the artwork is the element-by-element breakdown and
+      the exact colour palette used to render it.
+    </p>
+  </section>
+
+  <!-- ===================== Logo artwork ===================== -->
+  <section class="card">
+    <div class="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 px-6 py-4">
+      <div class="flex items-center gap-3">
+        <span class="rounded-xl border border-neon-cyan/40 bg-neon-cyan/10 p-2.5 text-neon-cyan">
+          {{ ui.icon('satellite', 'w-6 h-6') }}
+        </span>
+        <div>
+          <h2 class="text-base font-bold text-white">Primary mission mark</h2>
+          <p class="text-xs text-slate-500">
+            {% if logo_available %}
+              PNG &middot; 900 &times; 420 &middot; {{ (logo_size / 1024) | round(1) }} KiB
+            {% else %}
+              Artwork unavailable
+            {% endif %}
+          </p>
+        </div>
+      </div>
+      <a href="{{ url_for('static', filename='logo.png') }}" download="somaiyasat-somaiyapod-logo.png"
+         class="btn btn-ghost">
+        <span class="text-xs">Download PNG</span>
+      </a>
+    </div>
+
+    <div class="p-6">
+      {% if logo_available %}
+        <div class="logo-stage">
+          <img src="{{ url_for('static', filename='logo.png') }}"
+               alt="SomaiyaSat and SomaiyaPod PocketQube mission logo"
+               class="logo-art w-full max-w-4xl">
+        </div>
+      {% else %}
+        <div class="rounded-xl border border-dashed border-white/15 bg-white/[0.02] p-10 text-center">
+          <p class="text-sm text-slate-400">
+            The logo PNG could not be generated on this machine. Run
+            <span class="font-mono text-neon-cyan">python logo_generator.py</span>
+            to produce <span class="font-mono text-slate-300">static/logo.png</span>.
+          </p>
+        </div>
+      {% endif %}
+    </div>
+  </section>
+
+  <!-- ===================== Design breakdown ===================== -->
+  <section class="grid gap-6 lg:grid-cols-2">
+    <div class="card">
+      <div class="flex items-center gap-3 border-b border-white/10 px-6 py-4">
+        <span class="rounded-xl border border-neon-magenta/40 bg-neon-magenta/10 p-2.5 text-neon-magenta">
+          {{ ui.icon('image', 'w-6 h-6') }}
+        </span>
+        <div>
+          <h2 class="text-base font-bold text-white">Design breakdown</h2>
+          <p class="text-xs text-slate-500">Every element drawn on the canvas</p>
+        </div>
+      </div>
+      <dl class="divide-y divide-white/5">
+        {% for element in design_elements %}
+          <div class="px-6 py-4">
+            <dt class="text-sm font-semibold text-white">{{ element.name }}</dt>
+            <dd class="mt-1.5 text-sm leading-relaxed text-slate-400">{{ element.detail }}</dd>
+          </div>
+        {% endfor %}
+      </dl>
+    </div>
+
+    <!-- ===================== Colour palette ===================== -->
+    <div class="card">
+      <div class="flex items-center gap-3 border-b border-white/10 px-6 py-4">
+        <span class="rounded-xl border border-neon-gold/40 bg-neon-gold/10 p-2.5 text-neon-gold">
+          {{ ui.icon('cpu', 'w-6 h-6') }}
+        </span>
+        <div>
+          <h2 class="text-base font-bold text-white">Colour palette</h2>
+          <p class="text-xs text-slate-500">Aerospace dark theme &middot; {{ palette | length }} colours</p>
+        </div>
+      </div>
+      <ul class="divide-y divide-white/5">
+        {% for colour in palette %}
+          <li class="flex items-center gap-4 px-6 py-3.5">
+            <span class="h-10 w-10 shrink-0 rounded-lg ring-1 ring-white/20"
+                  style="background-color: {{ colour.hex }};"></span>
+            <div class="min-w-0 flex-1">
+              <p class="text-sm font-semibold text-slate-100">{{ colour.name }}</p>
+              <p class="truncate text-xs text-slate-500">{{ colour.role }}</p>
+            </div>
+            <code class="shrink-0 rounded-md border border-white/10 bg-black/40 px-2 py-1 font-mono text-xs uppercase text-neon-cyan">
+              {{ colour.hex }}
+            </code>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </section>
+
+  <!-- ===================== Usage notes ===================== -->
+  <section class="card">
+    <div class="flex items-center gap-3 border-b border-white/10 px-6 py-4">
+      <span class="rounded-xl border border-neon-emerald/40 bg-neon-emerald/10 p-2.5 text-neon-emerald">
+        {{ ui.icon('activity', 'w-6 h-6') }}
+      </span>
+      <div>
+        <h2 class="text-base font-bold text-white">Regenerating the artwork</h2>
+        <p class="text-xs text-slate-500">The mark is fully reproducible from source</p>
+      </div>
+    </div>
+    <div class="space-y-4 p-6 text-sm leading-relaxed text-slate-400">
+      <p>
+        <span class="font-mono text-neon-cyan">logo_generator.py</span> paints the mark on a
+        Tkinter canvas and captures it straight from the window device context, so the PNG is
+        pixel-identical on every run. The starfield is seeded with a fixed random sequence and
+        the artwork is drawn at 900 &times; 420 pixels.
+      </p>
+      <pre class="overflow-x-auto rounded-lg border border-white/10 bg-black/40 p-4 font-mono text-xs text-slate-300"><code>python logo_generator.py                          # writes static/logo.png
+python logo_generator.py --size 1200x560         # custom canvas size
+python logo_generator.py --print-palette         # list the colour palette</code></pre>
+      <p>
+        The dashboard also regenerates the file automatically on start-up whenever
+        <span class="font-mono text-slate-300">static/logo.png</span> is missing.
+      </p>
+    </div>
+  </section>
+</div>
+{% endblock %}

@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}SomaiyaSat &amp; SomaiyaPod | PocketQube Mission{% endblock %}</title>
+  <meta name="description" content="Mission dashboard for the SomaiyaSat and SomaiyaPod PocketQube mission: payloads, telemetry and AI inter-satellite routing.">
+  <link rel="icon" href="{{ url_for('static', filename='logo.png') }}">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            space: {
+              950: '#03060F',
+              900: '#050B18',
+              800: '#0B1B3A',
+              700: '#122B54',
+              600: '#1B3F73'
+            },
+            neon: {
+              cyan: '#22D3EE',
+              dim: '#0E7490',
+              magenta: '#E879F9',
+              gold: '#FBBF24',
+              emerald: '#34D399'
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'Segoe UI', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'Consolas', 'ui-monospace', 'monospace']
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+</head>
+<body class="bg-space-950 text-slate-200 font-sans antialiased min-h-screen flex flex-col">
+
+  <!-- ================= Header / Navigation ================= -->
+  <header class="sticky top-0 z-50 border-b border-white/10 bg-space-950/85 backdrop-blur-md">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="flex h-20 items-center justify-between gap-6">
+        <a href="{{ url_for('index') }}" class="flex items-center gap-4 shrink-0 group">
+          <img src="{{ url_for('static', filename='logo.png') }}" alt="SomaiyaSat &amp; SomaiyaPod mission logo"
+               class="h-12 w-auto rounded-lg ring-1 ring-white/10 transition group-hover:ring-neon-cyan/50">
+          <span class="hidden sm:block">
+            <span class="block text-xs font-semibold uppercase tracking-[0.25em] text-neon-cyan">PocketQube Mission</span>
+            <span class="block text-sm font-bold tracking-wide text-slate-100">SomaiyaSat &amp; SomaiyaPod</span>
+          </span>
+        </a>
+
+        <nav class="flex items-center gap-1 sm:gap-2">
+          <a href="{{ url_for('index') }}"
+             class="nav-link {{ 'nav-link-active' if page == 'dashboard' }}">
+            Dashboard
+          </a>
+          <a href="{{ url_for('payloads') }}"
+             class="nav-link {{ 'nav-link-active' if page == 'payloads' }}">
+            Payloads
+          </a>
+          <a href="{{ url_for('logo') }}"
+             class="nav-link {{ 'nav-link-active' if page == 'logo' }}">
+            Logo
+          </a>
+          <a href="{{ url_for('telemetry') }}"
+             class="nav-link {{ 'nav-link-active' if page == 'telemetry' }}">
+            Telemetry
+          </a>
+        </nav>
+
+        <div class="hidden lg:flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5">
+          <span class="relative flex h-2 w-2">
+            <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-neon-emerald opacity-70"></span>
+            <span class="relative inline-flex h-2 w-2 rounded-full bg-neon-emerald"></span>
+          </span>
+          <span class="text-xs font-medium text-slate-300">
+            {{ 'SUPABASE / POSTGRES' if db_backend == 'postgresql' else 'LOCAL SQLITE' }}
+          </span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ================= Flash messages ================= -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-6 w-full">
+        {% for category, message in messages %}
+          <div class="mb-3 flex items-start gap-3 rounded-xl border px-4 py-3 text-sm
+                      {% if category == 'error' %}border-red-500/40 bg-red-500/10 text-red-200
+                      {% else %}border-neon-emerald/40 bg-neon-emerald/10 text-emerald-200{% endif %}">
+            <span class="mt-0.5 font-bold">{{ '!' if category == 'error' else '✓' }}</span>
+            <span>{{ message }}</span>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+
+  {% if db_error %}
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-6 w-full">
+      <div class="rounded-xl border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm text-amber-200">
+        <span class="font-bold">Database notice:</span> {{ db_error }}
+      </div>
+    </div>
+  {% endif %}
+
+  <!-- ================= Main content ================= -->
+  <main class="flex-1">
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- ================= Footer ================= -->
+  <footer class="border-t border-white/10 bg-space-900/50">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
+      <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div class="flex items-center gap-3">
+          <img src="{{ url_for('static', filename='logo.png') }}" alt="" class="h-8 w-auto opacity-70">
+          <p class="text-xs text-slate-500">
+            SomaiyaSat &amp; SomaiyaPod &mdash; PocketQube Mission Control.
+            <span class="hidden sm:inline">Data source: {{ db_backend }}.</span>
+          </p>
+        </div>
+        <p class="text-xs text-slate-600">
+          &copy; {{ current_year }} &middot; AI inter-satellite routing demo
+        </p>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>

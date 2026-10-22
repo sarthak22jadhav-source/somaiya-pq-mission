@@ -1,0 +1,18 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# Local configuration and secrets
+.env
+
+# Local database
+*.db
+*.sqlite3
+
+# Generated artefacts
+server.log
+server.err.log
+static/_shot_*.png
